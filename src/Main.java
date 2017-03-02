@@ -4,11 +4,7 @@
 public class Main {
 
     public static void main(String[] args) throws Exception{
-        System.out.println("Hello World");
-
-        LinuxMonitoring p = new LinuxMonitoring();
-        String[] cpu = p.getCpuUsage().split("\n");
-        System.out.println(cpu[0]);
-
+        LinuxMonitoring linux = new LinuxMonitoring();
+        System.out.println(linux.cpuJiffiesToPercentage());
     }
 }

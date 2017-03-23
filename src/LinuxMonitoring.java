@@ -1,18 +1,15 @@
 import java.lang.reflect.Array;
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.HashMap;
-import java.util.List;
+import java.util.*;
 
 /**
  * Created by kienseng.koh on 2/28/2017.
  */
 public class LinuxMonitoring {
 
-    HashMap<String, Integer> systemInfo = new HashMap<>();
-    HashMap<String, Integer> cpuUsage = new HashMap<>();
-    HashMap<String, Integer> memoryUsage = new HashMap<>();
-    HashMap<String, Integer> diskUsage = new HashMap<>();
+    HashMap<String, Object> systemInfo = new LinkedHashMap<>();
+    HashMap<String, Object> cpuUsage = new LinkedHashMap<>();
+    HashMap<String, Object> memoryUsage = new LinkedHashMap<>();
+    HashMap<String, Object> diskUsage = new LinkedHashMap<>();
 
 
     public void getCpuUsage() {
@@ -21,7 +18,18 @@ public class LinuxMonitoring {
     }
 
     public void getMemoryInfo() {
+        String[] consoleOutput = new ExecuteShell().execute(new String[]{"/bin/sh", "-c", "free -k"}).split("\\s{2,99}");
+//        for(int i = 0; i < consoleOutput.length; i++){
+//            System.out.println("************" + consoleOutput[i] + " #" + i);
+//        }
 
+        memoryUsage.put("total", kbToMbWithDecimal(Integer.parseInt(consoleOutput[7])));
+        memoryUsage.put("used", kbToMbWithDecimal(Integer.parseInt(consoleOutput[13])));
+        memoryUsage.put("free", kbToMbWithDecimal(Integer.parseInt(consoleOutput[14].split("\n")[0])));
+        memoryUsage.put("buffers", kbToMbWithDecimal(Integer.parseInt(consoleOutput[11])));
+        memoryUsage.put("cached", kbToMbWithDecimal(Integer.parseInt(consoleOutput[12].split("\n")[0])));
+
+//        System.out.println(memoryUsage);
     }
 
     public void getDiskInfo() {
@@ -39,5 +47,9 @@ public class LinuxMonitoring {
 
         //Calculate the total usage of CPU, sum of all value
         long total = arrCpuUsageConverted.get(0) + arrCpuUsageConverted.get(2) + arrCpuUsageConverted.get(3);
+    }
+
+    private String kbToMbWithDecimal(int digit){
+        return String.format("%,d", digit / 1024) + " MB";
     }
 }
